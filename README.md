@@ -5,7 +5,7 @@ A library for [OpenSCAD][OpenSCAD] to create [spur gear][spur-gear] geometry for
 
 ## Features
 - Fast calculations based on analytical formulas and pre-calculation of the intrinsic properties
-- Controllable gear resolution
+- Uniform arc length parametrization used when generating the gear profile (adjustable resolution)
 
 # Installing the module in OpenSCAD
 Clone this repository and copy the folder `OpenSCAD_SpurGear` to the OpenSCAD libraries folder, [read more][OpenSCAD-libraries].
