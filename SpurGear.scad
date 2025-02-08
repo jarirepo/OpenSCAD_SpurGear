@@ -115,9 +115,14 @@ module spur_gear_pinion(props, w) {
   M = len(pinion_profile);
   pts = [
     for (i = [0:z-1])
+      let (
+        c = i == 0 ? 0 : cos(i * cp),
+        s = i == 0 ? 0 : sin(i * cp),
+        Rz = i == 0 ? [] : [[c, s], [-s, c]]
+      )
       for (j = [0:M-1])
-        i == 0 ? pinion_profile[j] : pinion_profile[j] * [[cos(i * cp), sin(i * cp)], [-sin(i * cp), cos(i * cp)]]
-  ];  
+        i == 0 ? pinion_profile[j] : pinion_profile[j] * Rz
+  ];
 
   render(convexity = 2)
   linear_extrude(w)
