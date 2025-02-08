@@ -1,0 +1,4 @@
+D2R = PI / 180;
+R2D = 180 / PI;
+MIN_ARC_SEGM = 1;
+MAX_ARC_SEGM = 1000;
