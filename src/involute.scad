@@ -24,3 +24,11 @@ function circle_involute_intersect(r, R) = R2D * sqrt(pow(R / r, 2) - 1);
   @param r      Involute circle radius
 */
 function circle_involute_length(theta, r) = r * pow(D2R * theta, 2) / 2;
+
+/**
+  Returns the parameter theta (in degrees) for a given length of a circle involute
+
+  @param L  Distance along the circle involute curve [mm] 
+  @param r  Involute circle radius [mm]
+*/
+function circle_involute_param(L, r) = R2D * sqrt(2 * L / r);

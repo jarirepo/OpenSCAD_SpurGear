@@ -36,12 +36,14 @@ function spur_gear_init(z, m, alpha, arc_resol = 0.1) = let (
   ],
   pa = circle_involute(theta_a, Db / 2),
   // Generate point along the gear tooth profile (from the base circle, theta=0, to the addendum circle, theta=theta_a)
-  N = curve_segments(circle_involute_length(theta_a, Db / 2), arc_resol),
+  L = circle_involute_length(theta_a, Db / 2),
+  N = curve_segments(L, arc_resol),  
   profile = [
     [Dr / 2, 0],
     for (k = [0:N])
-      let (a = k * theta_a / N)
-      circle_involute(a, Db / 2)
+      // let (theta = k * theta_a / N) // non-uniform arc length parametrization
+      let (theta = circle_involute_param(k * L / N, Db / 2)) // uniform arc length parametrization
+      circle_involute(theta, Db / 2)
   ],
   // Mirror the profile about the axis P[1], reversed order!
   axis1 = P[1] / norm(P[1]),
