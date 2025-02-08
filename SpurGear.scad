@@ -1,13 +1,14 @@
 include <VERSION.scad>
 include <src/constants.scad>
 include <src/prop_helpers.scad>
+include <src/geom_helpers.scad>
 include <src/arc.scad>
 include <src/involute.scad>
 
 /**
   Spur Gear Initialization
 
-  @param m          Addendum [mm]
+  @param m          Module (addendum) [mm]
   @param z          No. of teeth
   @param alpha      Pressure angle [deg]
   @param arc_resol  Arc resolution [mm]
@@ -34,12 +35,12 @@ function spur_gear_init(z, m, alpha, arc_resol = 0.1) = let (
       pp * Rz
   ],
   pa = circle_involute(theta_a, Db / 2),
-  // Generate point along the gear tooth profile
-  N = 20,
+  // Generate point along the gear tooth profile (from the base circle, theta=0, to the addendum circle, theta=theta_a)
+  N = curve_segments(circle_involute_length(theta_a, Db / 2), arc_resol),
   profile = [
     [Dr / 2, 0],
-    for (k = [0: N-1])
-      let (a = k * theta_a / (N - 1))
+    for (k = [0:N])
+      let (a = k * theta_a / N)
       circle_involute(a, Db / 2)
   ],
   // Mirror the profile about the axis P[1], reversed order!
@@ -65,8 +66,8 @@ function spur_gear_init(z, m, alpha, arc_resol = 0.1) = let (
   ang_r = cp - acos(u1*u2),
   Tr = [u2, [-u2[1], u2[0]]],
   // Generate points on the addendum and root arcs (for the gear tooth profile)
-  Na = arc_segments(ang_a, D / 2, arc_resol),
-  Nr = arc_segments(ang_r, Dr / 2, arc_resol),
+  Na = curve_segments(arc_length(ang_a, D / 2), arc_resol),
+  Nr = curve_segments(arc_length(ang_r, Dr / 2), arc_resol),
   profile_a = [for (k = [0:Na])
     let (u = k / Na) 
     (D / 2) * [cos(u * ang_a), sin(u * ang_a)] * Ta
@@ -78,6 +79,7 @@ function spur_gear_init(z, m, alpha, arc_resol = 0.1) = let (
   // Generate the complete polygon for the pinion by a sequence of rotations of the base profile about the z-axis
   pinion_profile = concat(profile, profile_a, profile_m, profile_r)
 ) [
+  ["ver", VERSION],
   ["m", m],
   ["b", b],
   ["z", z],
@@ -134,7 +136,7 @@ module spur_gear_rack(props, z, w, t) {
 
 /** Usage example */
 module spur_gear_usage() {
-  gear = spur_gear_init(z = 16, m = 0.75, alpha = 20.0, arc_resol = .1);
+  gear = spur_gear_init(z = 16, m = 0.75, alpha = 20.0, arc_resol = .05);
   echo(gear = gear);
   color("orange", alpha = .9);
   spur_gear_pinion(gear, w = 3.0);
