@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 ### Performance
-- 0.2.1 Reduced computations when generating pinions
+- Reduced computations when generating pinions
+### Added
+- Create meshing gear rack
 
 ## [0.2.1]
 ### Changed

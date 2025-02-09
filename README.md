@@ -1,11 +1,12 @@
 # OpenSCAD_SpurGear
-A library for [OpenSCAD][OpenSCAD] to create [spur gear][spur-gear] geometry for [pinions][pinion] and meshing gear racks (not yet supported).
+A library for [OpenSCAD][OpenSCAD] to create [spur gear][spur-gear] geometry for [pinions][pinion] and meshing gear racks.
 
-<img src="docs/SpurGear_Pinion_1.png">
+<!-- <img src="docs/SpurGear_Pinion_1.png"> -->
+<img src="docs/SpurGear_Pinion_GearRack_1.png">
 
 ## Features
-- Fast calculations based on analytical formulas and pre-calculation of the intrinsic properties
-- Uniform arc length parametrization used when generating the gear profile (adjustable resolution)
+- Fast calculations based on analytical formulas and pre-calculation of the intrinsic properties.
+- Uniform arc length parametrization used when generating the gear profile (adjustable resolution).
 
 # Installing the module in OpenSCAD
 Clone this repository and copy the folder `OpenSCAD_SpurGear` to the OpenSCAD libraries folder, [read more][OpenSCAD-libraries].
@@ -31,3 +32,4 @@ In VS Code, install the [OpenSCAD][OpenSCAD-Ext] and [OpenSCAD Language Support]
 [spur-gear]: https://en.wikipedia.org/wiki/Spur_gear
 [pinion]: https://en.wikipedia.org/wiki/Pinion
 [spur-gears]: https://www.academia.edu/45138344/The_Geometry_of_Involute_Gears
+[circle-involute]: https://en.wikipedia.org/wiki/Involute
