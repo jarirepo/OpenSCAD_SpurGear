@@ -11,19 +11,36 @@ A library for [OpenSCAD][OpenSCAD] to create [spur gear][spur-gear] geometry for
 # Installing the module in OpenSCAD
 Clone this repository and copy the folder `OpenSCAD_SpurGear` to the OpenSCAD libraries folder, [read more][OpenSCAD-libraries].
 
-## Usage example
+In VS Code, install the [OpenSCAD][OpenSCAD-Ext] and [OpenSCAD Language Support][OpenSCAD-Language-Support-Ext] extensions.
 
+## Usage examples
+
+### Create pinion
 ```scad
 use <OpenSCAD_SpurGear/SpurGear.scad>
 
-gear = spur_gear_init(z = 16, m = 0.75, alpha = 20.0, arc_resol = .1);
+gear = spur_gear_init(z = 16, m = 1.0, alpha = 20.0);
 echo(gear = gear);
 
-color("orange", alpha = .5);
-spur_gear_pinion(gear, w = 3.0);
+pinion_props = spur_gear_pinion_init(gear, w = 3.0, arc_resol = .05);
+
+spur_gear_pinion(pinion_props);
 ```
 
-In VS Code, install the [OpenSCAD][OpenSCAD-Ext] and [OpenSCAD Language Support][OpenSCAD-Language-Support-Ext] extensions.
+### Create gear rack
+```scad
+use <OpenSCAD_SpurGear/SpurGear.scad>
+
+gear = spur_gear_init(z = 16, m = 1.0, alpha = 20.0);
+echo(gear = gear);
+
+gear_rack_props = spur_gear_rack_init(gear, z = 10, width = 3.0, thickness = 2.0);
+
+//translate([0, 3.0, 0])
+//rotate([90, 0, 0])
+spur_gear_rack(gear_rack_props);
+```
+More examples can be found in the `examples` folder.
 
 [OpenSCAD]: https://openscad.org/
 [OpenSCAD-libraries]: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Libraries
