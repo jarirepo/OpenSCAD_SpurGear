@@ -55,3 +55,8 @@ function line_line_intersect(P, u, Q, v) = let (
     x = [Q - P] * inv2([u, -v])
   )
   P + x[0][0] * u;
+
+/**
+  Returns the normalized vector (v)
+*/
+function normalize(v) = v / norm(v);

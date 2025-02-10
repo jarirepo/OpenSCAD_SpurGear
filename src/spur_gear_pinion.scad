@@ -41,15 +41,15 @@ function spur_gear_pinion_init(props, w, arc_resol = DEFAULT_ARC_RES) =
       circle_involute(theta, r)
   ],
   // Mirror the gear profile about the axis P[1], reversed order
-  profile_m = mirror2(reverse(profile), P[1] / norm(P[1])),
+  profile_m = mirror2(reverse(profile), normalize(P[1])),
   // Included angle of the addendum arc
-  v1 = profile[len(profile)-1] / norm(profile[len(profile)-1]),
-  v2 = profile_m[0] / norm(profile_m[0]),
+  v1 = normalize(profile[len(profile)-1]),
+  v2 = normalize(profile_m[0]),
   ang_a = acos(v1*v2),
   Ta = [v1, [-v1[1], v1[0]]],
   // Included angle of the root arc
-  u1 = profile[0] / norm(profile[0]),
-  u2 = profile_m[len(profile_m)-1] / norm(profile_m[len(profile_m)-1]),
+  u1 = normalize(profile[0]),
+  u2 = normalize(profile_m[len(profile_m)-1]),
   ang_r = cp - acos(u1*u2),
   Tr = [u2, [-u2[1], u2[0]]],
   // Generate points on the addendum and root arcs (for the gear tooth profile)

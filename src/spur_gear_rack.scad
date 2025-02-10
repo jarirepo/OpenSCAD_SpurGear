@@ -24,12 +24,12 @@ function spur_gear_rack_init(props, z, width, thickness) =
 
     pitch = PI * m,
     // Center line for the gear rack tooth (pointing outwards)
-    w = P[3] / norm(P[3]),
+    w = normalize(P[3]),
     // Create the normal vector (wn) by rotating (w) by 90 degrees
     wn = w * RZ90,
     // Tangent points for the "pressure vector"
     T = circle_involute(alpha, r),
-    Tm = mirror2(T, P[1] / norm(P[1])),
+    Tm = mirror2(T, normalize(P[1])),
     Tm2 = mirror2(Tm, w),
     // Gear rack (A)ddendum and (D)edendum points along the tooth center line
     M = (Tm + Tm2) / 2,
@@ -38,7 +38,7 @@ function spur_gear_rack_init(props, z, width, thickness) =
     // Gear rack profile
     //  Solve for the rack segment starting point
     //  Intersect the vector (wn) through the points A and D, with the tangent (t) through the point (Tm)
-    t = mirror2([cos(alpha), sin(alpha)], P[1] / norm(P[1])),
+    t = mirror2([cos(alpha), sin(alpha)], normalize(P[1])),
     R = [
       Pd - (pitch / 2) * wn,
       line_line_intersect(Pd, wn, Tm, t),
