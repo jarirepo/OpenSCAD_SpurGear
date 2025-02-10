@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [1.0.0]
 ### Performance
 - Reduced computations when generating pinions
 ### Added
@@ -21,6 +23,7 @@
 - Create pinion
 
 [Unreleased]: https://github.com/jarirepo/OpenSCAD_SpurGear/tree/dev
+[1.0.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v0.2.1...v1.0.0
 [0.2.1]: https://github.com/jarirepo/OpenSCAD_SpurGear/releases/tag/v0.2.1
 [0.2.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/commit/93cde8256ff3072e3b81598d7aad5aafd4b06c1e
 [0.1.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v0.1.0...v0.1.0
