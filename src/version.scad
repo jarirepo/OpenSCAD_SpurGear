@@ -1,4 +1,4 @@
-SPURGEAR_SEMVER = [1, 1, 1];
+SPURGEAR_SEMVER = [1, 1, 2];
 
 function spurgear_required(ver) =
   assert(len(ver) == 3, "Version array must have three semantic version elements")

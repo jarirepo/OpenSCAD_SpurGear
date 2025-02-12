@@ -2,9 +2,15 @@
 
 ## [Unreleased]
 
-## [1.1.1][1.1.1]
-### Removed
+## [1.1.2][1.1.2]
+### Added
+- Added example `Pinion_Animation`
+### Changed
+- Corrected example `Pinion_Pinion_Positioning` to use matrix multiplications instead of nested transformations.
+### Deleted
 - `VERSION.scad`
+
+## [1.1.1][1.1.1]
 ### Added
 - Function `spurgear_required` included in `src/version.scad` that should be used to make assertion on `SpurGear` library version
 ### Changed
@@ -36,6 +42,7 @@
 
 [Unreleased]: https://github.com/jarirepo/OpenSCAD_SpurGear/tree/dev
 
+[1.1.2]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/1.0.0...v1.1.0
 [1.0.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v0.2.1...1.0.0
