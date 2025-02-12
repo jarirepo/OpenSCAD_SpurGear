@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [1.1.2][1.1.2]
 ### Added
 - Added example `Pinion_Animation`
 ### Changed
@@ -40,6 +42,7 @@
 
 [Unreleased]: https://github.com/jarirepo/OpenSCAD_SpurGear/tree/dev
 
+[1.1.2]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/1.0.0...v1.1.0
 [1.0.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v0.2.1...1.0.0
