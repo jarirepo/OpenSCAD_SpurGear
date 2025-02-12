@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.2.0][1.2.0]
+### Added
+- Gear rack fillet radius
+
 ## [1.1.2][1.1.2]
 ### Added
 - Added example `Pinion_Animation`
@@ -42,6 +46,7 @@
 
 [Unreleased]: https://github.com/jarirepo/OpenSCAD_SpurGear/tree/dev
 
+[1.2.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.1.2...v1.2.0
 [1.1.2]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/1.0.0...v1.1.0

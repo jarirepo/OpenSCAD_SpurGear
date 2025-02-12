@@ -2,6 +2,7 @@ include <constants.scad>
 include <prop_helpers.scad>
 include <geom_helpers.scad>
 include <involute.scad>
+include <arc.scad>
 
 /*
   Gear rack initialization
@@ -10,11 +11,14 @@ include <involute.scad>
   @param z          No. of teeth
   @param width      Gear rack width [mm]
   @param thickness  Gear rack thickness [mm]
+  @param rf         Fillet radius [mm] (default: 0)
 */
-function spur_gear_rack_init(props, z, width, thickness) =
+function spur_gear_rack_init(props, z, width, thickness, rf = 0, res = DEFAULT_ARC_RES) =
   assert(z > 0, "No. of teeth (z) must be greater than 0")
   assert(width > 0, "Width must be greater than 0")
   assert(thickness > 0, "Thickness must be greater than 0")
+  assert(rf >= 0, "Fillet radius must be greater than or equal to 0")
+  assert(res > 0, "Resolution must be greater than 0")
   let (
     m = find_prop_value("m", props),
     b = find_prop_value("b", props),
@@ -44,7 +48,19 @@ function spur_gear_rack_init(props, z, width, thickness) =
       line_line_intersect(Pd, wn, Tm, t),
       line_line_intersect(Pa, wn, Tm, t)
     ],
-    rack_profile = concat(R, mirror2(reverse(R), w)),
+    // Validate fillet radius
+    v1 = normalize(R[1]-R[0]),
+    v2 = normalize(R[2]-R[1]),
+    tau = acos(v1 * v2),
+    rfmax = norm(R[1]-R[0])/tan(tau / 2),
+    // assert(rf <= rfmax, "Fillet radius is too large"), // this produces a warning!
+    // Generate the rack profile by concatenating the rack segment with its mirror
+    // rack_profile = concat(R, mirror2(reverse(R), w)),
+    // Generate fillets
+    A1 = gen_arc(wn, R[2]-R[1], rf, R[1], res),
+    A2 = gen_arc(R[2]-R[1], wn, rf, R[2], res),
+    pts = concat([R[0]], A1, A2, [R[2]]),
+    rack_profile = concat(pts, mirror2(reverse(pts), w)),
     Pref = rack_profile[0] + thickness * w,
     // Generate the rack polygon (with the rack teeth) by sequential translations of the gear rack profile along the vector (wn)
     rack_polygon = [
@@ -55,7 +71,9 @@ function spur_gear_rack_init(props, z, width, thickness) =
         rack_profile[0] - Pref + z * pitch * wn + thickness * w,
         rack_profile[0] - Pref + thickness * w,
     ] * [[w[0], wn[0]], [w[1], wn[1]]] * RZ90N
-  ) [
+  )
+  assert(rf <= rfmax, "Fillet radius is too large")
+[
   ["type", TYPE_RACK],
   ["m", m],
   ["alpha", alpha],
@@ -64,6 +82,9 @@ function spur_gear_rack_init(props, z, width, thickness) =
   ["pitch", pitch],
   ["width", width],
   ["thickness", thickness],
+  ["rf", rf],
+  ["rfmax", rfmax],
+  ["rack_profile", rack_profile],
   ["rack_polygon", rack_polygon],
 ];
 
