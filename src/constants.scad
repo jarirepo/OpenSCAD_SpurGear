@@ -6,3 +6,5 @@ DEFAULT_ARC_RES = 0.1;
 EYE2 = [[1, 0], [0, 1]];
 RZ90 = [[0, 1], [-1, 0]];
 RZ90N = [[0, -1], [1, 0]];
+TYPE_PINION = "pinion";
+TYPE_RACK = "rack";

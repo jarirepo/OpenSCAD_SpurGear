@@ -14,7 +14,7 @@ include <involute.scad>
 function spur_gear_pinion_init(props, w, arc_resol = DEFAULT_ARC_RES) =
   assert(w > 0, "Width (w) must be greater than 0")
   assert(arc_resol > 0, "Arc resolution (arc_resol) must be greater than 0")
- let (
+  let (
   m = find_prop_value("m", props),
   b = find_prop_value("b", props),
   alpha = find_prop_value("alpha", props),
@@ -66,14 +66,15 @@ function spur_gear_pinion_init(props, w, arc_resol = DEFAULT_ARC_RES) =
   pinion_polygon = [
     for (i = [0:z-1])
       let (
-        c = i == 0 ? 0 : cos(i * cp),
-        s = i == 0 ? 0 : sin(i * cp),
-        Rz = i == 0 ? [] : [[c, s], [-s, c]]
+        c = (i == 0) ? 0 : cos(i * cp),
+        s = (i == 0) ? 0 : sin(i * cp),
+        Rz = (i == 0) ? [] : [[c, s], [-s, c]]
       )
       for (j = [0:len(pinion_profile)-1])
-        i == 0 ? pinion_profile[j] : pinion_profile[j] * Rz
+        (i == 0) ? pinion_profile[j] : pinion_profile[j] * Rz
   ]
 ) [
+  ["type", TYPE_PINION],
   ["m", m],
   ["alpha", alpha],
   ["b", b],
@@ -86,6 +87,87 @@ function spur_gear_pinion_init(props, w, arc_resol = DEFAULT_ARC_RES) =
   ["Dp", Dp],
   ["Dr", Dr],
   ["pinion_polygon", pinion_polygon],
+];
+
+/**
+  x[0] - alpha, pinion A involute parameter
+  x[1] - gamma, pinion B rotation angle
+  phiA - angle of the selected tooth on pinion A
+  phiB - angle of the selected tooth on pinion B
+  ra - radius of pinion A base circle
+  rb - radius of pinion B base circle
+  Ca - center of pinion A
+  Cb - center of pinion B
+*/
+function _pos(x, phiA, phiB, ra, rb, Ca, Cb) = let (
+  cosa = cos(phiA),
+  sina = sin(phiA),
+  cosb = cos(phiB + x[1]),
+  sinb = sin(phiB + x[1]),
+  A = [[cosa, sina], [-sina, cosa]],
+  B = [[cosb, sinb], [-sinb, cosb]],
+  beta = phiA + x[0] + 180 - phiB - x[1],
+  Ia = circle_involute(x[0], ra),
+  Ib = circle_involute(beta, rb)
+) Ia * A - Ib * B - (Cb - Ca);
+
+/**
+  Recursive Newton-Raphson solver (since OpenSCAD doesn't allow re-assigning variables)
+*/
+function _solve_rotation(phiA, phiB, ra, rb, Ca, Cb, x = [180 / PI, 0], it = 20, h = 1e-10, ftol = 1e-9) =
+  let (
+    fx = _pos(x, phiA, phiB, ra, rb, Ca, Cb),
+    J = [
+      (_pos(x + [h, 0], phiA, phiB, ra, rb, Ca, Cb) - fx) / h,
+      (_pos(x + [0, h], phiA, phiB, ra, rb, Ca, Cb) - fx) / h
+    ],
+    xx = x - fx * inv2(J),
+    fnorm = norm(_pos(xx, phiA, phiB, ra, rb, Ca, Cb))
+  )
+  (it > 0 && fnorm > ftol)
+    ? _solve_rotation(phiA, phiB, ra, rb, Ca, Cb, xx, it - 1)
+    : xx[1];
+
+/**
+  Returns the 4-by-4 transformation matrix to position pinion 2 relative to pinion 1, along the direction vector (v)
+
+    use multmatrix(T) to apply the transformation
+
+  (After applying the transformation, the two pitch circles will become tangential)
+*/
+function pinion_position(props1, props2, v) = 
+  assert(
+    find_prop_value("type", props1) == TYPE_PINION && find_prop_value("type", props2) == TYPE_PINION,
+    "Requires two pinions"
+  )
+  assert(
+    find_prop_value("m", props1) == find_prop_value("m", props2) &&
+    find_prop_value("alpha", props1) == find_prop_value("alpha", props2),
+    "Non-meshing pinions"
+  )
+  assert(len(v) == 2 && norm(v) > 0, "Invalid direction vector (v)")
+  let (
+    phiA = find_prop_value("cp", props1),
+    phiB = find_prop_value("cp", props2),
+    ra = find_prop_value("r", props1),
+    rb = find_prop_value("r", props2),
+    Dp1 = find_prop_value("Dp", props1),  // Pitch circle diam. of pinion 1
+    Dp2 = find_prop_value("Dp", props2),  // Pitch circle diam. of pinion 2
+    Ca = [0, 0],  // Center pt. of pinion 1
+    Cb = (Dp1 + Dp2) / 2 * normalize(v),  // Center pt. of pinion 2
+    // Find index of a nearby tooth in the direction v, on pinion A.
+    // The algorithm is not sensitive to the choise of tooth on pinion B, but
+    // we want to perform small rotations to not mess up the coordinate system when positioning
+    // linked pinions.
+    phi = (atan2(v[1], v[0]) + 360) % 360,
+    i = floor(phi / phiA),
+    j = floor(((phi + 180) % 360) / phiB),
+    rz = _solve_rotation(i * phiA, j * phiB, ra, rb, Ca, Cb)
+) [
+  [cos(rz), -sin(rz), 0, Cb[0]],
+  [sin(rz), cos(rz), 0, Cb[1]],
+  [0, 0, 1, 0],
+  [0, 0, 0, 1]
 ];
 
 /**

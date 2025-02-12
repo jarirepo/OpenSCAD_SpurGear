@@ -25,17 +25,17 @@ function spur_gear_init(z, m, alpha) =
   b = 1.25 * m,         // Dedendum
   Dr = Dp - 2 * b,      // Root circle diam.
   cp = 360 / z,         // Circular pitch angle, same as 2*PI*P/(PI*Dp)
-  theta_p = circle_involute_intersect(Db, Dp),  // Intersection between the circle involute and the pitch circle
+  theta_p = circle_involute_intersect(r, Dp / 2),  // Intersection between the circle involute and the pitch circle
   // Generate the "construction points"
   // Rotate the intersection point to get intermediate points along the pitch circle
-  //  1/4: defines the vector used when mirroring
+  //  1/4: defines the vector used when mirroring, i.e. the tooth center line
   //  3/4: used to construct the gear rack
-  pp = circle_involute(theta_p, r),
+  p = circle_involute(theta_p, r),
   P = [
-    pp,
+    p,
     for (k = [1:4])
       let (a = k * cp / 4, c = cos(a), s = sin(a), Rz = [[c, s], [-s, c]])
-      pp * Rz
+      p * Rz
   ]
 ) [
   ["m", m],
