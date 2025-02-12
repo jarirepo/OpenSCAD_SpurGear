@@ -43,6 +43,10 @@ gear_rack_props = spur_gear_rack_init(gear, z = 10, width = 3.0, thickness = 2.0
 //rotate([90, 0, 0])
 spur_gear_rack(gear_rack_props);
 ```
+It is also possible to add a fillet radius to the gear rack, see example `GearRack_FilletR`.
+It responds with an error if the given radius is too large.
+
+<img src="examples/GearRack_FilletR.png" />
 
 ### Positioning of pinion B relative to pinion A
 There is no need to guess how much to rotate pinion B to mesh with pinion A.
@@ -74,3 +78,4 @@ More examples can be found in the `examples` folder.
 [pinion]: https://en.wikipedia.org/wiki/Pinion
 [spur-gears]: https://www.academia.edu/45138344/The_Geometry_of_Involute_Gears
 [circle-involute]: https://en.wikipedia.org/wiki/Involute
+[circle-spline]: https://www.researchgate.net/publication/220721917_Fair_and_robust_circle_splines
