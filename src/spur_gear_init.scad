@@ -1,4 +1,3 @@
-include <../VERSION.scad>
 include <constants.scad>
 include <prop_helpers.scad>
 include <geom_helpers.scad>
@@ -49,5 +48,4 @@ function spur_gear_init(z, m, alpha) =
   ["Dp", Dp],
   ["Dr", Dr],
   ["P", P],
-  ["ver", VERSION],
 ];

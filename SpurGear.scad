@@ -1,3 +1,4 @@
+include <src/version.scad>
 include <src/prop_helpers.scad>
 include <src/spur_gear_init.scad>
 include <src/spur_gear_pinion.scad>
