@@ -1,10 +1,12 @@
 # Changelog
 
 ## [Unreleased]
-### Deleted
-- `VERSION.scad`
+### Added
+- Added example `Pinion_Animation`
 ### Changed
 - Corrected example `Pinion_Pinion_Positioning` to use matrix multiplications instead of nested transformations.
+### Deleted
+- `VERSION.scad`
 
 ## [1.1.1][1.1.1]
 ### Added
