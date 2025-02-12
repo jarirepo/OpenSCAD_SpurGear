@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [1.1.0]
 ### Added
 - 1.0.0 Positioning of two or more meshing pinions
 
