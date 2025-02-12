@@ -1,4 +1,5 @@
 use <../SpurGear.scad>
+assert(spurgear_required([1, 1, 0]), "Please upgrade SpurGear library to version 1.1.0 or higher");
 
 /**
   This example shows how to properly align three meshing spur gear pinions

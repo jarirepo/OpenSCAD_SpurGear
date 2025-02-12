@@ -1,4 +1,5 @@
 use <../SpurGear.scad>
+assert(spurgear_required([1, 0, 0]), "Please upgrade SpurGear library to version 1.0.0 or higher");
 
 module PinionWithIndendation() {
   gear = spur_gear_init(z = 16, m = 0.75, alpha = 20.0);
