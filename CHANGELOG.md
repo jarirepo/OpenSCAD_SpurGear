@@ -1,10 +1,10 @@
 # Changelog
 
 ## [Unreleased]
+### Deleted
+- `VERSION.scad`
 
 ## [1.1.1][1.1.1]
-### Removed
-- `VERSION.scad`
 ### Added
 - Function `spurgear_required` included in `src/version.scad` that should be used to make assertion on `SpurGear` library version
 ### Changed
