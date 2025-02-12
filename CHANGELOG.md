@@ -3,6 +3,8 @@
 ## [Unreleased]
 ### Deleted
 - `VERSION.scad`
+### Changed
+- Corrected example `Pinion_Pinion_Positioning` to use matrix multiplications instead of nested transformations.
 
 ## [1.1.1][1.1.1]
 ### Added

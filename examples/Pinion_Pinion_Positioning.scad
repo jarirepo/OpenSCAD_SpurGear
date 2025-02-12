@@ -31,31 +31,23 @@ module Pinion_Pinion_Positioning() {
   T12 = pinion_position(pinion1, pinion2, [1, 0]);
   // Calc. transformation for pinion 3 to mesh with pinion 2
   T23 = pinion_position(pinion2, pinion3, [1.5, 1]);
-
+  // Calc. transformation for pinion 4 to mesh with pinion 3. Note that pinion 4 uses the same model as pinion 1
   T34 = pinion_position(pinion3, pinion1, [1, -5]);
 
-  echo(T12 = T12);
-  echo(T23 = T23);
-
-  // No more manuallly set rotation angle!
-  // spur_gear_pinion(pinion1);
-  // rotate([0, 0, ?])
-  //   spur_gear_pinion(pinion2);
+  echo(T12 = T12, T23 = T23, T34 = T34);
 
   // Use multmatrix to apply the transformation (translation and rotation)
   translate([15, 20, 0]) {
     spur_gear_pinion(pinion1);
-    multmatrix(T12) {
+    // Pinion 2    
+    multmatrix(T12)
       spur_gear_pinion(pinion2);
-      // Pinion 3 is relative to the pinion 2 coordinate system
-      multmatrix(T23) {
-        spur_gear_pinion(pinion3);
-        // Pinion 4 (uses the same model as pinion 1) is relative to the pinion 3 coordinate system
-        multmatrix(T34) {
-          spur_gear_pinion(pinion1);
-        }
-      }
-    }
+    // Pinion 3
+    multmatrix(T12 * T23)
+      spur_gear_pinion(pinion3);
+    // Pinion 4 (uses the same model as pinion 1)
+    multmatrix(T12 * T23 * T34)
+      spur_gear_pinion(pinion1);
   }
 }
 
