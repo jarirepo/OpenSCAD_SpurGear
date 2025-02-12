@@ -2,14 +2,16 @@
 A library for [OpenSCAD][OpenSCAD] to create [spur gear][spur-gear] geometry for [pinions][pinion] and meshing gear racks.
 
 <!-- <img src="docs/SpurGear_Pinion_1.png"> -->
-<img src="docs/SpurGear_Pinion_GearRack_1.png">
+<img src="docs/SpurGear_Pinion_GearRack_1.png" />
 
 ## Features
+- Create pinions and meshing gear racks
 - Fast calculations based on analytical formulas and pre-calculation of the intrinsic properties.
 - Uniform arc length parametrization used when generating the gear profile (adjustable resolution).
+- Built-in helper function to support positioning and orientation of pinions.
 
 # Installing the module in OpenSCAD
-Clone this repository and copy the folder `OpenSCAD_SpurGear` to the OpenSCAD libraries folder, [read more][OpenSCAD-libraries].
+Clone this repository and copy the folder `OpenSCAD_SpurGear` to the OpenSCAD libraries folder, [read more][OpenSCAD-man-libraries].
 
 In VS Code, install the [OpenSCAD][OpenSCAD-Ext] and [OpenSCAD Language Support][OpenSCAD-Language-Support-Ext] extensions.
 
@@ -40,10 +42,31 @@ gear_rack_props = spur_gear_rack_init(gear, z = 10, width = 3.0, thickness = 2.0
 //rotate([90, 0, 0])
 spur_gear_rack(gear_rack_props);
 ```
+
+### Positioning of pinion B relative to pinion A
+There is no need to guess how much to rotate pinion B to mesh with pinion A.
+```scad
+spur_gear_pinion(pinion1);
+rotate([0, 0, ?])
+  spur_gear_pinion(pinion2);
+```
+
+Instead, the library provides a function `pinion_position` which returns the 4-by-4 transformation matrix. When applying the matrix using the built-in [`multmatrix`][OpenSCAD-man-multmatrix] function, pinion B will be positioned and oriented properly relative to pinion A along the given direction vector.
+
+<img src="docs/Meshing_Pinions.png" />
+
+It is also possible to link multiple pinions. The position and orientation is calculated within the coordinate frame of the previous (target) pinion.
+
+<img src="examples/Pinion_Pinion_Positioning.png" />
+
+The implemented pinion positioning algorithm is robust and efficient and re-calculates the pinion configuration on every update. All pinions will therefore be properly aligned upon model changes.
+
 More examples can be found in the `examples` folder.
 
 [OpenSCAD]: https://openscad.org/
-[OpenSCAD-libraries]: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Libraries
+[OpenSCAD-man]: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual
+[OpenSCAD-man-libraries]: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Libraries
+[OpenSCAD-man-multmatrix]: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Transformations#multmatrix
 [OpenSCAD-Ext]: https://marketplace.visualstudio.com/items?itemName=Antyos.openscad
 [OpenSCAD-Language-Support-Ext]: https://marketplace.visualstudio.com/items?itemName=Leathong.openscad-language-support
 [spur-gear]: https://en.wikipedia.org/wiki/Spur_gear

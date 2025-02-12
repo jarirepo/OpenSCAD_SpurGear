@@ -56,6 +56,7 @@ function spur_gear_rack_init(props, z, width, thickness) =
         rack_profile[0] - Pref + thickness * w,
     ] * [[w[0], wn[0]], [w[1], wn[1]]] * RZ90N
   ) [
+  ["type", TYPE_RACK],
   ["m", m],
   ["alpha", alpha],
   ["b", b],
