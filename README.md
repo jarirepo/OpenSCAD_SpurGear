@@ -46,7 +46,7 @@ spur_gear_rack(gear_rack_props);
 It is also possible to add a fillet radius to the gear rack, see example `GearRack_FilletR`.
 It responds with an error if the given radius is too large.
 
-<img src="examples/GearRack_FilletR.png" />
+<img src="examples/png/GearRack_FilletR.png" />
 
 ### Positioning of pinion B relative to pinion A
 There is no need to guess how much to rotate pinion B to mesh with pinion A.
@@ -62,11 +62,14 @@ Instead, the library provides a function `pinion_position` which returns the 4-b
 
 It is also possible to link multiple pinions. The position and orientation is calculated within the coordinate frame of the previous (target) pinion.
 
-<img src="examples/Pinion_Pinion_Positioning.png" />
+<img src="examples/png/Pinion_Pinion_Positioning.png" />
 
 The implemented pinion positioning algorithm is robust and efficient and re-calculates the pinion configuration on every update. All pinions will therefore be properly aligned upon model changes.
 
 More examples can be found in the `examples` folder.
+
+# Upcoming features
+- Position pinion next to a meshing gear rack
 
 [OpenSCAD]: https://openscad.org/
 [OpenSCAD-man]: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual

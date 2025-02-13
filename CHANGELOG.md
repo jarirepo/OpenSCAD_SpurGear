@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+### Changed
+- 1.2.0 PNG and STL files inside separate folders in examples folder
 
 ## [1.2.0][1.2.0]
 ### Added
