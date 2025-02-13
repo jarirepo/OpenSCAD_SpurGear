@@ -140,11 +140,7 @@ function pinion_position(props1, props2, v) =
     find_prop_value("type", props1) == TYPE_PINION && find_prop_value("type", props2) == TYPE_PINION,
     "Requires two pinions"
   )
-  assert(
-    find_prop_value("m", props1) == find_prop_value("m", props2) &&
-    find_prop_value("alpha", props1) == find_prop_value("alpha", props2),
-    "Non-meshing pinions"
-  )
+  assert(check_compatibility(props1, props2), "Incompatible pinions")
   assert(len(v) == 2 && norm(v) > 0, "Invalid direction vector (v)")
   let (
     phiA = find_prop_value("cp", props1),
