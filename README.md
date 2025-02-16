@@ -71,6 +71,9 @@ More examples can be found in the `examples` folder.
 # Upcoming features
 - Position pinion next to a meshing gear rack
 
+# Issues
+- Positioning a gear rack in the direction of a pinion fails.
+
 [OpenSCAD]: https://openscad.org/
 [OpenSCAD-man]: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual
 [OpenSCAD-man-libraries]: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Libraries

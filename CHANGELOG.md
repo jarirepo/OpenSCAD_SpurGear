@@ -1,8 +1,13 @@
 # Changelog
 
-## [Unreleased]
+## [Unreleased][Unreleased]
+
+## [1.3.0][1.3.0]
+### Added
+- 1.2.0 Positioning and orientation of gear racks to mesh with a pinion 
 ### Changed
 - 1.2.0 PNG and STL files inside separate folders in examples folder
+- 1.2.0 Replaced hard-coded property names with string literals
 
 ## [1.2.0][1.2.0]
 ### Added
@@ -48,8 +53,9 @@
 
 [Unreleased]: https://github.com/jarirepo/OpenSCAD_SpurGear/tree/dev
 
-[1.2.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.1.2...v1.2.0
-[1.1.2]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.1.1...v1.1.2
+[1.3.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.2.0...v1.3.0
+[1.2.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/1.1.2...v1.2.0
+[1.1.2]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.1.1...1.1.2
 [1.1.1]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/1.0.0...v1.1.0
 [1.0.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v0.2.1...1.0.0
