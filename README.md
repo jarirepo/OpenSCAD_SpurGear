@@ -69,7 +69,6 @@ The implemented pinion positioning algorithm is robust and efficient and re-calc
 More examples can be found in the `examples` folder.
 
 # Upcoming features
-- Position pinion next to a meshing gear rack
 
 # Issues
 - Positioning a gear rack in the direction of a pinion fails.
