@@ -1,4 +1,4 @@
-SG_SEMVER = [1, 3, 0];
+SG_SEMVER = [1, 3, 1];
 
 D2R = PI / 180;
 R2D = 180 / PI;

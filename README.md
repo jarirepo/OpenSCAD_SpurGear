@@ -8,9 +8,10 @@ A library for [OpenSCAD][OpenSCAD] to create [spur gear][spur-gear] geometry for
 - Create pinions and meshing gear racks
 - Fast calculations based on analytical formulas and pre-calculation of the intrinsic properties.
 - Uniform arc length parametrization used when generating the gear profile (adjustable resolution).
-- Built-in helper function to support positioning and orientation of pinions.
+- Built-in helper function to support positioning and orientation of pinions and gear racks.
 - Easy to setup animations with multiple meshing pinions.
 - Fillet radius for gear racks (optional).
+- Easy to setup animation with pinion and gear rack.
 
 # Installing the module in OpenSCAD
 Clone this repository and copy the folder `OpenSCAD_SpurGear` to the OpenSCAD libraries folder, [read more][OpenSCAD-man-libraries].
@@ -67,11 +68,6 @@ It is also possible to link multiple pinions. The position and orientation is ca
 The implemented pinion positioning algorithm is robust and efficient and re-calculates the pinion configuration on every update. All pinions will therefore be properly aligned upon model changes.
 
 More examples can be found in the `examples` folder.
-
-# Upcoming features
-
-# Issues
-- Positioning a gear rack in the direction of a pinion fails.
 
 [OpenSCAD]: https://openscad.org/
 [OpenSCAD-man]: https://en.wikibooks.org/wiki/OpenSCAD_User_Manual
