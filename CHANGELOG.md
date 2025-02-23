@@ -2,6 +2,12 @@
 
 ## [Unreleased][Unreleased]
 
+## [1.3.1][1.3.1]
+### Added
+- Gear rack animation example
+### Changed
+- Updated README
+
 ## [1.3.0][1.3.0]
 ### Added
 - 1.2.0 Positioning and orientation of gear racks to mesh with a pinion 
@@ -53,6 +59,7 @@
 
 [Unreleased]: https://github.com/jarirepo/OpenSCAD_SpurGear/tree/dev
 
+[1.3.1]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/1.1.2...v1.2.0
 [1.1.2]: https://github.com/jarirepo/OpenSCAD_SpurGear/compare/v1.1.1...1.1.2
