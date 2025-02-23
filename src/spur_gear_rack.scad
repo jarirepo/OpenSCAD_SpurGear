@@ -1,8 +1,9 @@
-include <constants.scad>
-include <prop_helpers.scad>
-include <geom_helpers.scad>
-include <involute.scad>
-include <arc.scad>
+include <./constants.scad>
+include <./prop_helpers.scad>
+include <./geom_helpers.scad>
+include <./involute.scad>
+include <./arc.scad>
+include <./spur_gear_helpers.scad>
 
 /*
   Gear rack initialization
@@ -20,10 +21,10 @@ function spur_gear_rack_init(props, z, width, thickness, rf = 0, res = DEFAULT_A
   assert(rf >= 0, "Fillet radius must be greater than or equal to 0")
   assert(res > 0, "Resolution must be greater than 0")
   let (
-    m = find_prop_value("m", props),
-    b = find_prop_value("b", props),
-    alpha = find_prop_value("alpha", props),
-    r = find_prop_value("r", props),
+    m = find_prop_value(SG_MODULE, props),
+    b = find_prop_value(SG_DEDENDUM, props),
+    alpha = find_prop_value(SG_PRESSURE_ANGLE, props),
+    r = find_prop_value(SG_BASE_RADIUS, props),
     P = find_prop_value("P", props),
 
     pitch = PI * m,
@@ -52,7 +53,10 @@ function spur_gear_rack_init(props, z, width, thickness, rf = 0, res = DEFAULT_A
     v1 = normalize(R[1]-R[0]),
     v2 = normalize(R[2]-R[1]),
     tau = acos(v1 * v2),
-    rfmax = norm(R[1]-R[0])/tan(tau / 2),
+    rfmax = norm(R[1]-R[0])/tan(tau / 2)
+  )
+  assert(rf <= rfmax, "Fillet radius is too large")
+  let (
     // assert(rf <= rfmax, "Fillet radius is too large"), // this produces a warning!
     // Generate the rack profile by concatenating the rack segment with its mirror
     // rack_profile = concat(R, mirror2(reverse(R), w)),
@@ -69,23 +73,116 @@ function spur_gear_rack_init(props, z, width, thickness, rf = 0, res = DEFAULT_A
         for (j = [0:len(rack_profile)-1])
           rack_profile[j] + T,
         rack_profile[0] - Pref + z * pitch * wn + thickness * w,
-        rack_profile[0] - Pref + thickness * w,
-    ] * [[w[0], wn[0]], [w[1], wn[1]]] * RZ90N
+        rack_profile[0] - Pref + thickness * w
+    ] * [[w[0], wn[0]], [w[1], wn[1]]] * RZ90N,
+    // Needed for positioning of the gear rack, targeting a meshing pinion
+    pressure_dist = norm(Tm), // distance from center of the pinion to the "pressure line",
+    pressure_width = norm(Tm2 - Tm) // width of the "pressure line"
   )
-  assert(rf <= rfmax, "Fillet radius is too large")
 [
-  ["type", TYPE_RACK],
-  ["m", m],
-  ["alpha", alpha],
-  ["b", b],
-  ["z", z],
-  ["pitch", pitch],
-  ["width", width],
-  ["thickness", thickness],
-  ["rf", rf],
-  ["rfmax", rfmax],
-  ["rack_profile", rack_profile],
-  ["rack_polygon", rack_polygon],
+  [SG_TYPE, SG_TYPE_RACK],
+  [SG_MODULE, m],
+  [SG_PRESSURE_ANGLE, alpha],
+  [SG_DEDENDUM, b],
+  [SG_NO_OF_TEETH, z],
+  [SG_PITCH, pitch],
+  [SG_WIDTH, width],
+  [SG_THICKNESS, thickness],
+  [SG_FILLET_R, rf],
+  [SG_FILLET_R_MAX, rfmax],
+  [SG_PRESSURE_DIST, pressure_dist],
+  [SG_PRESSURE_WIDTH, pressure_width],
+  [SG_PROFILE, rack_profile],
+  [SG_POLYGON, rack_polygon],
+];
+
+/**
+  x[0] - alpha, pinion A involute parameter
+  x[1] - gamma, pinion B rotation angle
+  phiA - angle of the selected tooth on pinion A
+  phiB - angle of the selected tooth on pinion B
+  ra - radius of pinion A base circle
+  rb - radius of pinion B base circle
+  Ca - center of pinion A
+  Cb - center of pinion B
+*/
+function __pos(x, phi, r, m, b, alpha, dp, wp, p, t, phiR) = let (
+  // Pinion origin relative to the gear rack
+  Porg = [0, dp + t + b],
+  // Tangent point on pinion base circle involute (local coords.)
+  Pinvol = circle_involute(alpha, r),
+  c = cos(phi),
+  s = sin(phi),
+  Rz = [[c, s], [-s, c]],
+  Plcs = Pinvol * Rz,
+  // Transform P to the rack base coordinate system (WCS)
+  // Pwcs = T * Plcs <=> Plcs = T^-1 * Pwcs
+  ex = [cos(phiR), sin(phiR)],
+  ey = [-ex[1], ex[0]],
+  T = [
+    [ex[0], ey[0]],
+    [ex[1], ey[1]]
+  ],
+  Pwcs = Plcs * T + Porg,
+  Prack = [(p + wp) / 2, t + b] + x
+) Pwcs - Prack;
+
+/**
+  Recursive Newton-Raphson solver (since OpenSCAD doesn't allow re-assigning variables)
+
+  NOT USED!
+*/
+function _solve_translation(phi, r, m, b, alpha, dp, wp, p, t, phiR, x = [0, 0], it = 20, h = 1e-10, ftol = 1e-9) =
+  let (
+    fx = __pos(x, phi, r, m, b, alpha, dp, wp, p, t, phiR),
+    J = [
+      (__pos(x + [h, 0], phi, r, m, b, alpha, dp, wp, p, t, phiR) - fx) / h,
+      (__pos(x + [0, h], phi, r, m, b, alpha, dp, wp, p, t, phiR) - fx) / h
+    ],
+    xx = x - fx * inv2(J),
+    fnorm = norm(__pos(xx, phi, r, m, b, alpha, dp, wp, p, t, phiR))
+  )
+  (it > 0 && fnorm > ftol)
+    ? _solve_translation(phi, r, m, b, alpha, dp, wp, p, t, phiR, xx, it - 1)
+    : xx;
+
+/**
+  Returns the 4-by-4 transformation matrix to position gear rack to a pinion, along the direction vector (v)
+
+    use multmatrix(T) to apply the transformation
+*/
+function rack_position(pinion, rack, v) =
+  assert(
+    find_prop_value(SG_TYPE, pinion) == SG_TYPE_PINION && find_prop_value(SG_TYPE, rack) == SG_TYPE_RACK,
+    "Requires a pinion and a gear rack"
+  )
+  assert(check_compatibility(pinion, rack), "Incompatible pinion and gear rack")
+  assert(len(v) == 2 && norm(v) > 0, "Invalid direction vector (v)")
+  let (
+    alpha = find_prop_value(SG_PRESSURE_ANGLE, rack),
+    cp = find_prop_value(SG_CIRCULAR_PITCH, pinion),
+    r = find_prop_value(SG_BASE_RADIUS, pinion),
+    dp = find_prop_value(SG_PRESSURE_DIST, rack),
+    wp = find_prop_value(SG_PRESSURE_WIDTH, rack),
+    m = find_prop_value(SG_MODULE, rack),
+    b = find_prop_value(SG_DEDENDUM, rack),
+    p = find_prop_value(SG_PITCH, rack),
+    t = find_prop_value(SG_THICKNESS, rack),
+    phiR = (atan2(v[1],v[0]) + 360) % 360,
+    // Find index of a nearby tooth in the direction v
+    phi = (phiR - 90 + 360) % 360,
+    i = floor(phi / cp),
+    // X = _solve_translation(i * cp, r, m, b, alpha, dp, wp, p, t, phiR),
+    Rz = [[cos(phiR), sin(phiR)], [-sin(phiR), cos(phiR)]],
+    // Tr = [X[0], -(dp + t + b) + 0*X[1]] * Rz,
+    delta = __pos([0,0], i * cp, r, m, b, alpha, dp, wp, p, t, phiR),
+    Tr = [delta[0], -(dp + t + b)] * Rz
+)
+[
+  [cos(phiR), -sin(phiR), 0, Tr[0]],
+  [sin(phiR), cos(phiR), 0, Tr[1]],
+  [0, 0, 1, 0],
+  [0, 0, 0, 1]
 ];
 
 /*
@@ -94,9 +191,9 @@ function spur_gear_rack_init(props, z, width, thickness, rf = 0, res = DEFAULT_A
   @param props  Properties obtained from `spur_gear_rack_init`
 */
 module spur_gear_rack(props) {
-  width = find_prop_value("width", props);
-  thickness = find_prop_value("thickness", props);
-  rack_polygon = find_prop_value("rack_polygon", props);
+  width = find_prop_value(SG_WIDTH, props);
+  thickness = find_prop_value(SG_THICKNESS, props);
+  rack_polygon = find_prop_value(SG_POLYGON, props);
 
   render(convexity = 2)
     linear_extrude(width)

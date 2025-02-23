@@ -13,13 +13,14 @@ function arc_length(theta, r) = (theta * D2R) * r;
   Generates a circular arc by a modified version of the "Circle Spline" algorithm.
   
   Endpoint tangents and radius are given.
-  The intersection point (corner) is located at (0, 0).
+  The intersection point (corner) is located at C.
   Not possible here to check if the radius is too large w.r.t. the geometry.
 
   @param v1   Direction of the 1st line
   @param v2   Direction of the 2nd line
   @param r    Fillet radius
-  @param res  Arc resolution
+  @param C    Corner point [xc, yc] (default: [0, 0])
+  @param res  Arc resolution (default: DEFAULT_ARC_RES)
 */
 function gen_arc(v1, v2, r, C = [0, 0], res = DEFAULT_ARC_RES) = let (
   a = normalize(v1),

@@ -37,15 +37,17 @@ function spur_gear_init(z, m, alpha) =
       p * Rz
   ]
 ) [
-  ["m", m],
-  ["alpha", alpha],
-  ["b", b],
-  ["z", z],
-  ["cp", cp],
-  ["D", D],
-  ["Db", Db], ["r", r],
-  ["Dc", Dc],
-  ["Dp", Dp],
-  ["Dr", Dr],
+  [SG_MODULE, m],
+  [SG_PRESSURE_ANGLE, alpha],
+  [SG_DEDENDUM, b],
+  [SG_NO_OF_TEETH, z],
+  [SG_CIRCULAR_PITCH, cp],
+  [SG_ADDENDUM_DIAMETER, D],
+  [SG_BASE_DIAMETER, Db],
+  [SG_BASE_RADIUS, r],
+  [SG_CLEARANCE_DIAMETER, Dc],
+  [SG_PITCH_DIAMETER, Dp],
+  [SG_ROOT_DIAMETER, Dr],
   ["P", P],
+  ["theta_p", theta_p],
 ];

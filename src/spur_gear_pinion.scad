@@ -15,18 +15,18 @@ function spur_gear_pinion_init(props, w, arc_resol = DEFAULT_ARC_RES) =
   assert(w > 0, "Width (w) must be greater than 0")
   assert(arc_resol > 0, "Arc resolution (arc_resol) must be greater than 0")
   let (
-  m = find_prop_value("m", props),
-  b = find_prop_value("b", props),
-  alpha = find_prop_value("alpha", props),
-  z = find_prop_value("z", props),
-  r = find_prop_value("r", props),
+  m = find_prop_value(SG_MODULE, props),
+  b = find_prop_value(SG_DEDENDUM, props),
+  alpha = find_prop_value(SG_PRESSURE_ANGLE, props),
+  z = find_prop_value(SG_NO_OF_TEETH, props),
+  r = find_prop_value(SG_BASE_RADIUS, props),
+  cp = find_prop_value(SG_CIRCULAR_PITCH, props),
+  D = find_prop_value(SG_ADDENDUM_DIAMETER, props),
+  Db = find_prop_value(SG_BASE_DIAMETER, props),
+  Dr = find_prop_value(SG_ROOT_DIAMETER, props),
+  Dc = find_prop_value(SG_CLEARANCE_DIAMETER, props),
+  Dp = find_prop_value(SG_PITCH_DIAMETER, props),
   P = find_prop_value("P", props),
-  cp = find_prop_value("cp", props),
-  D = find_prop_value("D", props),
-  Db = find_prop_value("Db", props),
-  Dr = find_prop_value("Dr", props),
-  Dc = find_prop_value("Dc", props),
-  Dp = find_prop_value("Dp", props),
 
   theta_a = circle_involute_intersect(Db, D),    // Intersection between the circle involute and the addendum circle
   // pa = circle_involute(theta_a, r),
@@ -74,19 +74,20 @@ function spur_gear_pinion_init(props, w, arc_resol = DEFAULT_ARC_RES) =
         (i == 0) ? pinion_profile[j] : pinion_profile[j] * Rz
   ]
 ) [
-  ["type", TYPE_PINION],
-  ["m", m],
-  ["alpha", alpha],
-  ["b", b],
-  ["z", z],
-  ["cp", cp],
-  ["w", w],
-  ["D", D],
-  ["Db", Db], ["r", r],
-  ["Dc", Dc],
-  ["Dp", Dp],
-  ["Dr", Dr],
-  ["pinion_polygon", pinion_polygon],
+  [SG_TYPE, SG_TYPE_PINION],
+  [SG_MODULE, m],
+  [SG_PRESSURE_ANGLE, alpha],
+  [SG_DEDENDUM, b],
+  [SG_NO_OF_TEETH, z],
+  [SG_CIRCULAR_PITCH, cp],
+  [SG_WIDTH, w],
+  [SG_ADDENDUM_DIAMETER, D],
+  [SG_BASE_DIAMETER, Db],
+  [SG_BASE_RADIUS, r],
+  [SG_CLEARANCE_DIAMETER, Dc],
+  [SG_PITCH_DIAMETER, Dp],
+  [SG_ROOT_DIAMETER, Dr],
+  [SG_POLYGON, pinion_polygon],
 ];
 
 /**
@@ -137,22 +138,18 @@ function _solve_rotation(phiA, phiB, ra, rb, Ca, Cb, x = [180 / PI, 0], it = 20,
 */
 function pinion_position(props1, props2, v) = 
   assert(
-    find_prop_value("type", props1) == TYPE_PINION && find_prop_value("type", props2) == TYPE_PINION,
+    find_prop_value(SG_TYPE, props1) == SG_TYPE_PINION && find_prop_value(SG_TYPE, props2) == SG_TYPE_PINION,
     "Requires two pinions"
   )
-  assert(
-    find_prop_value("m", props1) == find_prop_value("m", props2) &&
-    find_prop_value("alpha", props1) == find_prop_value("alpha", props2),
-    "Non-meshing pinions"
-  )
+  assert(check_compatibility(props1, props2), "Incompatible pinions")
   assert(len(v) == 2 && norm(v) > 0, "Invalid direction vector (v)")
   let (
-    phiA = find_prop_value("cp", props1),
-    phiB = find_prop_value("cp", props2),
-    ra = find_prop_value("r", props1),
-    rb = find_prop_value("r", props2),
-    Dp1 = find_prop_value("Dp", props1),  // Pitch circle diam. of pinion 1
-    Dp2 = find_prop_value("Dp", props2),  // Pitch circle diam. of pinion 2
+    phiA = find_prop_value(SG_CIRCULAR_PITCH, props1),
+    phiB = find_prop_value(SG_CIRCULAR_PITCH, props2),
+    ra = find_prop_value(SG_BASE_RADIUS, props1),
+    rb = find_prop_value(SG_BASE_RADIUS, props2),
+    Dp1 = find_prop_value(SG_PITCH_DIAMETER, props1),  // Pitch circle diam. of pinion 1
+    Dp2 = find_prop_value(SG_PITCH_DIAMETER, props2),  // Pitch circle diam. of pinion 2
     Ca = [0, 0],  // Center pt. of pinion 1
     Cb = (Dp1 + Dp2) / 2 * normalize(v),  // Center pt. of pinion 2
     // Find index of a nearby tooth in the direction v, on pinion A.
@@ -176,10 +173,10 @@ function pinion_position(props1, props2, v) =
   @param props  Properties obtained from `spur_gear_pinion_init`
 */
 module spur_gear_pinion(props) {
-  w = find_prop_value("w", props);
-  pinion_polygon = find_prop_value("pinion_polygon", props);
+  width = find_prop_value(SG_WIDTH, props);
+  pinion_polygon = find_prop_value(SG_POLYGON, props);
   
   render(convexity = 2)
-    linear_extrude(w)
+    linear_extrude(width)
       polygon(pinion_polygon);
 }
