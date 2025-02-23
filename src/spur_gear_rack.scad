@@ -107,18 +107,30 @@ function spur_gear_rack_init(props, z, width, thickness, rf = 0, res = DEFAULT_A
   Cb - center of pinion B
 */
 function __pos(x, phi, r, m, b, alpha, dp, wp, p, t, phiR) = let (
-  cosa = cos(phi - phiR),
-  sina = sin(phi - phiR),
-  A = [[cosa, sina], [-sina, cosa]],
-  I = circle_involute(alpha, r),
-  L = [
-     (p + wp) / 2 + x[0],
-    t + b + x[1]
-  ]
-) I * A - L;
+  // Pinion origin relative to the gear rack
+  Porg = [0, dp + t + b],
+  // Tangent point on pinion base circle involute (local coords.)
+  Pinvol = circle_involute(alpha, r),
+  c = cos(phi),
+  s = sin(phi),
+  Rz = [[c, s], [-s, c]],
+  Plcs = Pinvol * Rz,
+  // Transform P to the rack base coordinate system (WCS)
+  // Pwcs = T * Plcs <=> Plcs = T^-1 * Pwcs
+  ex = [cos(phiR), sin(phiR)],
+  ey = [-ex[1], ex[0]],
+  T = [
+    [ex[0], ey[0]],
+    [ex[1], ey[1]]
+  ],
+  Pwcs = Plcs * T + Porg,
+  Prack = [(p + wp) / 2, t + b] + x
+) Pwcs - Prack;
 
 /**
   Recursive Newton-Raphson solver (since OpenSCAD doesn't allow re-assigning variables)
+
+  NOT USED!
 */
 function _solve_translation(phi, r, m, b, alpha, dp, wp, p, t, phiR, x = [0, 0], it = 20, h = 1e-10, ftol = 1e-9) =
   let (
@@ -149,27 +161,24 @@ function rack_position(pinion, rack, v) =
   let (
     alpha = find_prop_value(SG_PRESSURE_ANGLE, rack),
     cp = find_prop_value(SG_CIRCULAR_PITCH, pinion),
+    r = find_prop_value(SG_BASE_RADIUS, pinion),
     dp = find_prop_value(SG_PRESSURE_DIST, rack),
     wp = find_prop_value(SG_PRESSURE_WIDTH, rack),
     m = find_prop_value(SG_MODULE, rack),
     b = find_prop_value(SG_DEDENDUM, rack),
-    r = find_prop_value(SG_BASE_RADIUS, pinion),
     p = find_prop_value(SG_PITCH, rack),
     t = find_prop_value(SG_THICKNESS, rack),
-    v1 = [0, 1],
-    v2 = -(v / norm(v)),
-    dir = sign(cross(v1, v2)),
-    phiR = dir * acos(v1 * v2),
+    phiR = (atan2(v[1],v[0]) + 360) % 360,
     // Find index of a nearby tooth in the direction v
-    phi = (atan2(v[1], v[0]) + 360) % 360,
+    phi = (phiR - 90 + 360) % 360,
     i = floor(phi / cp),
-    X = _solve_translation(i * cp, r, m, b, alpha, dp, wp, p, t, phiR),
-    Tr = X * [[cos(phiR), sin(phiR)], [-sin(phiR), cos(phiR)]]
-    // Tr = [1.917335717376041e+01, -2.114875456925060e+00]
+    // X = _solve_translation(i * cp, r, m, b, alpha, dp, wp, p, t, phiR),
+    Rz = [[cos(phiR), sin(phiR)], [-sin(phiR), cos(phiR)]],
+    // Tr = [X[0], -(dp + t + b) + 0*X[1]] * Rz,
+    delta = __pos([0,0], i * cp, r, m, b, alpha, dp, wp, p, t, phiR),
+    Tr = [delta[0], -(dp + t + b)] * Rz
 )
 [
-  // [cos(phiR), -sin(phiR), 0, -(dp + b + t) * v2[0]],
-  // [sin(phiR), cos(phiR), 0, -(dp + b + t) * v2[1]],
   [cos(phiR), -sin(phiR), 0, Tr[0]],
   [sin(phiR), cos(phiR), 0, Tr[1]],
   [0, 0, 1, 0],

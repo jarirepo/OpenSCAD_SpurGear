@@ -21,12 +21,16 @@ rack_pitch = find_prop_value(SG_PITCH, rack);
 
 spur_gear_pinion(pinion);
 
-T = rack_position(pinion, rack, [-1,-10]);
+// T = rack_position(pinion, rack, [0, 1]); // right
+// T = rack_position(pinion, rack, [-1, 0]); // top
+// T = rack_position(pinion, rack, [0, -1]); // left
+// T = rack_position(pinion, rack, [1, 0]); // bottom
+T = rack_position(pinion, rack, [-1, 1]);
 echo(T = T);
 
 color("gold", alpha = .75)
 multmatrix(T)
-translate([-3 * rack_pitch, 0, 0])
+translate([-2 * rack_pitch, 0, 0])
   spur_gear_rack(rack);
 
 echo(gear = gear);

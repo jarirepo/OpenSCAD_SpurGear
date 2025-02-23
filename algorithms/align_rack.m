@@ -16,7 +16,9 @@ rack = new_gear_rack(5, m, alpha, 2.0)
 
 % Direction for pinion B, v = [vx; vy]
 % v = [1; -.1];
-v = [1; 0];
+% v = [1; 0];
+% v = [-1; 0]
+v = [1; .5];
 
 % Find the intersection between the involute and the pitch circle
 theta_p = circle_involute_intersect(pinion.r, pinion.Dp / 2);
@@ -44,19 +46,35 @@ Tm = mirror2(T, normalize(P(:,2)));
 Tm2 = mirror2(Tm, normalize(P(:,4)));
 
 % Needed for positioning of the gear rack, targeting a meshing pinion
-pressure_dist = norm(Tm)        % distance from center of the pinion to the "pressure line"
-pressure_width = norm(Tm2 - Tm) % width of the "pressure line"
+pressure_dist = norm(Tm);        % distance from center of the pinion to the "pressure line"
+pressure_width = norm(Tm2 - Tm); % width of the "pressure line"
 
 % Gear rack initial direction
-v1 = [0; 1;];
-v2 = -normalize(v);
+% v1 = [1; 0];
 % v2 = normalize(v);
-dir = sign(cross([v1;0], [v2;0]))(3);
-phiR = dir * acos(dot(v1, v2));
+% v1_dot_v2 = dot(v1,v2);
+% if (v1_dot_v2 == -1)
+%   zdir = 1; % since cross-product gives 0 when dot(v1,v2) is -1
+% else
+%   zdir = sign(cross([v1;0], [v2;0]))(3);
+% end
+% phiR = zdir * (acos(v1_dot_v2));
+
+% --------------------
+%  (x, y)   atan2(y,x)
+% --------------------
+%  (1, 0)   0
+%  (0, 1)   pi/2
+%  (-1, 0)  pi
+%  (0, -1)  -pi/2
+% --------------------
+phiR = mod(atan2(v(2),v(1)) + TWO_PI, TWO_PI);
 
 % Find index of a nearby tooth in the direction v
-phi = mod(atan2(v(2), v(1)) + TWO_PI, TWO_PI);
+% phi = mod(atan2(v(2), v(1)) + TWO_PI, TWO_PI);
+phi = mod(phiR - pi/2 + TWO_PI, TWO_PI);
 i = floor(phi / pinion.cp);
+% disp([R2D * phiR, R2D * phi])
 
 params = struct(
   "phi", i * pinion.cp,
@@ -67,10 +85,10 @@ params = struct(
   "p", rack.p,
   "t", rack.t,
   "phiR", phiR,
-  "v", -v2,
+  "v", normalize(v),
   "dp", pressure_dist,
   "wp", pressure_width
-)
+);
 
 [x, f, niter, cnv] = nr_solver(
   "rack_pos",
@@ -79,16 +97,22 @@ params = struct(
   ftol = 1e-9
 );
 
-TT = [
+Rz = [
   cos(phiR), -sin(phiR);
   sin(phiR), cos(phiR)
 ];
-TT * x
 
-figure
-set(gca,'fontsize',12)
-semilogy(cnv)
-grid on
-title('Convergence')
-xlabel('Iteration')
-ylabel('|F|')
+% figure
+% set(gca,'fontsize',12)
+% semilogy(cnv)
+% grid on
+% title('Convergence')
+% xlabel('Iteration')
+% ylabel('|F|')
+
+Prack = [
+  x(1),
+  -(params.dp + params.t + params.b) + x(2)
+];
+
+P = Rz * Prack

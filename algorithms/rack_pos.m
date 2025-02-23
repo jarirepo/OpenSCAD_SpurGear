@@ -19,24 +19,24 @@
 % 
 function [F] = rack_pos(x, varargin)
   params = varargin{1};
-  % cosa = cos(params.phi);
-  % sina = sin(params.phi);
-  cosa = cos(params.phi - params.phiR);
-  sina = sin(params.phi - params.phiR);
-  % cosb = cos(params.phiR);
-  % sinb = sin(params.phiR);
-  A = [cosa, -sina; sina, cosa];
-  % B = [cosb, -sinb; sinb, cosb];
-  I = circle_involute(params.alpha, params.r);
-  % L = [
-  %   (params.p + params.wp) / 2 + x(1);
-  %   % params.dp + params.t + params.b + x(2)
-  %   params.t + params.b + x(2)
-  % ];
-  L = [
-    (params.p + params.wp) / 2 + x(1);
-    params.t + params.b + x(2)
-  ];
-  % F = A * I - B * L;
-  F = A * I - L;
+
+  % Pinion origin relative to the gear rack
+  Porg = [0; params.dp + params.t + params.b];
+
+  % Tangent point on pinion base circle involute (local coords.)
+  Pinvol = circle_involute(params.alpha, params.r);
+  c = cos(params.phi);
+  s = sin(params.phi);
+  Rz = [c, -s; s, c];
+  Plcs = Rz * Pinvol;
+
+  % Transform P to the rack base coordinate system (WCS)
+  % Pwcs = T * Plcs <=> Plcs = T^-1 * Pwcs
+  ex = params.v;
+  ey = [-ex(2); ex(1)];
+  T = [ex'; ey'];
+  Pwcs = T * Plcs + Porg;
+
+  Prack = [(params.p + params.wp) / 2; params.t + params.b] + x;
+  F = Pwcs - Prack;
 end
